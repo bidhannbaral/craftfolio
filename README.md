@@ -26,4 +26,4 @@ npm install
 # run in terminal
 npm run dev
 # click on the link in the terminal to view your website
->>>>>>> 2b1ed6d29e7ae54aa416a50c863908e248f53093
+~~~
