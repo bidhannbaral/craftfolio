@@ -3,13 +3,13 @@ import Template8 from '../Template/Template8';
 
 const Dummy8 = () => {
   const [form, setForm] = useState({
-    fullName: '',
-    profession: '',
-    bio: '',
+    fullName: 'Emma Harper',
+    profession: 'Makeup Artist',
+    bio: 'A passionate and creative makeup artist specializing in bridal and editorial looks.',
     profilePic: null,
-    email: '',
-    phone: '',
-    location: '',
+    email: 'emmaharper@gmail.com',
+    phone: '+1 (555) 123-4567',
+    location: 'Los Angeles, CA',
     topicSection: [],
   });
 

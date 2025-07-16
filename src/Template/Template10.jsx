@@ -1,5 +1,5 @@
 import React from 'react';
-
+import Profilepicture from '../Assets/Profilepicture'
 const Template10 = ({ data }) => {
   const {
     fullName = 'Your Name',

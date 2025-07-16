@@ -1,21 +1,28 @@
 import React, { useState } from 'react';
 import Template9 from '../Template/Template9'; 
-
+import Profilepicture from '../Assets/Profilepicture'
+import Hero_banner from '../Assets/Hero_banner'
 const Dummy9 = () => {
   const [form, setForm] = useState({
     fullName: 'Ben Harper',
     profession: 'Professor',
     about: 'Passionate educator and researcher in artificial intelligence and data science with over 15 years of experience in higher education. Dedicated to mentoring the next generation of computer scientists and advancing machine learning research.',
-    profilePic: null,
-    coverPic: null,
+    profilePic: Profilepicture,
+    coverPic: Hero_banner,
     phone: '+1 (555) 123-4567',
     email: 'ben.harper@gmail.com',
     address: 'Cambridge, Massachusetts, USA',
-    interests: [],
-    skills: [],
-    education: [],
-    experience: [],
-    topicSection: []
+    interests: ['Reading AI papers', 'Mentoring', 'Chess'],
+    skills: [ { name: 'Machine Learning', level: 90 },
+  { name: 'Python', level: 95 }],
+    education: [ { degree: 'Ph.D. in Computer Science', institution: 'MIT', year: '2010' },],
+    experience: ['Professor of Computer Science at Harvard (2016–Present)',],
+    topicSection: [{
+    title: 'AI for Social Good',
+    description: 'Developed ML models to optimize resource distribution.',
+    image: Hero_banner,
+    
+  },]
   });
 
   const [interestInput, setInterestInput] = useState('');
