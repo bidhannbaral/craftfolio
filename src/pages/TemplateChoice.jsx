@@ -31,7 +31,7 @@ const TemplateChoice = () => {
               </ul>
               <div className="card-actions justify-center">
                 <Link 
-                  to="/create/simple" 
+                  to="simple" 
                   className="btn btn-primary btn-md sm:btn-lg px-6 sm:px-8 py-2 sm:py-3 font-semibold text-sm sm:text-base"
                 >
                   Get Started
@@ -58,7 +58,7 @@ const TemplateChoice = () => {
               </ul>
               <div className="card-actions justify-center">
                 <Link 
-                  to="/create/custom" 
+                  to="custom" 
                   className="btn btn-secondary btn-md sm:btn-lg px-6 sm:px-8 py-2 sm:py-3 font-semibold text-sm sm:text-base"
                 >
                   Get Started
