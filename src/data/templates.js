@@ -1,28 +1,33 @@
-// Template categories
 export const TEMPLATE_TYPES = {
   MINIMAL: 'minimal',
   CREATIVE: 'creative',
   PROFESSIONAL: 'professional',
 };
 
-// Template data
 export const templates = [
   {
     id: 'minimalist',
     name: 'Minimalist Portfolio',
-    description: 'A clean and minimalist template perfect for showcasing your work with elegant simplicity.',
-    preview: 'https://via.placeholder.com/400x300/f8fafc/64748b?text=Minimalist+Layout',
+    description: 'A clean, centered layout perfect for showcasing work with simplicity.',
+    preview: 'https://via.placeholder.com/400x300/f8fafc/64748b?text=Minimalist',
     type: TEMPLATE_TYPES.MINIMAL,
-    features: ['Clean layout', 'Typography focused', 'Mobile responsive'],
+    features: ['Centered layout', 'Typography focused', 'Responsive'],
     sections: ['about', 'projects', 'skills', 'experience', 'contact'],
   },
+  {
+    id: 'minimalist2',
+    name: 'Minimalist Sidebar',
+    description: 'A sidebar-style minimalist template with resume-inspired structure.',
+    preview: 'https://via.placeholder.com/400x300/f1f5f9/475569?text=Minimalist+Sidebar',
+    type: TEMPLATE_TYPES.MINIMAL,
+    features: ['Sidebar layout', 'Resume-like', 'Compact design'],
+    sections: ['about', 'projects', 'skills', 'experience', 'contact'],
+  },
+ 
 ];
 
-// Helper functions
-export const getTemplatesByType = (type) => {
-  return templates.filter(template => template.type === type);
-};
+export const getTemplatesByType = (type) =>
+  templates.filter((template) => template.type === type);
 
-export const getTemplateById = (id) => {
-  return templates.find(template => template.id === id);
-};
+export const getTemplateById = (id) =>
+  templates.find((template) => template.id === id);

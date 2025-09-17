@@ -13,7 +13,7 @@ const PortfolioEditor = () => {
   const {
     currentPortfolio,
     savePortfolio,
-    resetCurrentPortfolio,
+
     loadPortfolio,
   } = usePortfolioStore();
 
@@ -92,18 +92,21 @@ const PortfolioEditor = () => {
           <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
             <h1 className="text-xl font-semibold">Portfolio Preview</h1>
             <div className="flex gap-2">
-              <button 
-                className="btn btn-ghost btn-sm"
-                onClick={() => setShowPreview(false)}
+            
+              <button
+              className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-base-content/80 bg-base-200 rounded-md hover:bg-base-300 hover:text-primary transition-colors duration-200"
+              onClick={() => setShowPreview(false)}
               >
-                ← Back to Editor
+              <span className="text-lg">←</span>
+              <span>Back to Editor</span>
               </button>
-              <button 
-                className="btn btn-primary btn-sm"
-                onClick={handleExportHTML}
-              >
-                Export HTML
-              </button>
+            
+             <button
+             className="flex items-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-primary/80 rounded-md hover:bg-primary-focus transition-colors duration-200 shadow-sm hover:shadow-md hover:bg-primary/60"
+            onClick={handleExportHTML}
+            >
+            <span>Export HTML</span>
+            </button>
             </div>
           </div>
         </div>
@@ -224,7 +227,7 @@ const PortfolioEditor = () => {
                   className="btn btn-ghost btn-sm w-full justify-start"
                   onClick={() => setShowPreview(true)}
                 >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-4 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                   </svg>
                   Live Preview
@@ -233,7 +236,7 @@ const PortfolioEditor = () => {
                   className="btn btn-ghost btn-sm w-full justify-start"
                   onClick={handleSave}
                 >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-4 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
                   </svg>
                   Save Progress
@@ -242,7 +245,7 @@ const PortfolioEditor = () => {
                   className="btn btn-ghost btn-sm w-full justify-start"
                   onClick={handleExportHTML}
                 >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-5 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                   </svg>
                   Export HTML

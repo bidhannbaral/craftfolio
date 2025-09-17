@@ -32,7 +32,8 @@ const AboutEditor = () => {
     setImagePreview(null);
     handleInputChange('profileImage', null);
   };
-
+ 
+  
   return (
     <div className="space-y-6">
       <div>
@@ -113,6 +114,8 @@ const AboutEditor = () => {
           </div>
         </div>
       </div>
+
+      
 
       <div className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

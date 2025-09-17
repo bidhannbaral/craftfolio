@@ -176,10 +176,11 @@ const ProjectsEditor = () => {
                         {project.image ? (
                           <div className="relative">
                             <img
-                              src={project.image}
-                              alt="Project preview"
-                              className="w-32 h-24 object-cover rounded-lg border"
+                           src={project.image}
+                            alt="Project preview"
+                            className="w-40 h-28s object-cover rounded-lg border border-gray-200 shadow-sm transform transition-all duration-200 hover:scale-105 hover:shadow-md"
                             />
+
                             <button
                               type="button"
                               onClick={() => updateProjectItem(project.id, { image: null })}
