@@ -180,8 +180,7 @@ const SkillsEditor = () => {
                         </div>
                       </div>
 
-                      {/* Optional inline editing (uncomment if you want live editing) */}
-                      {/* 
+                      
                       <select
                         className="select select-bordered select-xs mr-2"
                         value={skill.level}
@@ -191,7 +190,7 @@ const SkillsEditor = () => {
                           <option key={lvl} value={lvl}>{lvl}</option>
                         ))}
                       </select>
-                      */}
+                      
 
                       <button
                         onClick={() => handleRemoveSkill(skill.id)}
