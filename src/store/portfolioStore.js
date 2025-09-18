@@ -8,12 +8,18 @@ const defaultPortfolio = {
   sections: {
     about: {
       name: '',
-      title: '',
+      title: '',   //havenot used but gonna
+      tagline: '',          
       description: '',
       email: '',
       phone: '',
       location: '',
       profileImage: null,
+      heroBanner: null,    
+      heroBannerImage: null, 
+      resumeUrl: '',        //havenot used
+      heroHeadline: '',
+      heroSubtext: '',
     },
     projects: {
       items: [],
@@ -67,226 +73,359 @@ export const usePortfolioStore = create((set, get) => {
   };
 
   return {
-      // Current portfolio being edited
-      currentPortfolio: { ...defaultPortfolio },
-      
-      // Saved portfolios list
-      savedPortfolios: loadSavedPortfolios(),
-      
-      // UI state
-      isEditing: false,
-      selectedTemplate: null,
-      
-      // Actions
-      createNewPortfolio: (templateId) => {
-        const newPortfolio = {
-          ...defaultPortfolio,
-          id: Date.now().toString(),
-          template: templateId,
-          lastModified: new Date().toISOString(),
+    // Current portfolio being edited
+    currentPortfolio: { ...defaultPortfolio },
+
+    // Saved portfolios list
+    savedPortfolios: loadSavedPortfolios(),
+
+    // UI state
+    isEditing: false,
+    selectedTemplate: null,
+
+    // Actions
+    createNewPortfolio: (templateId) => {
+      let defaultStyling = {
+        primaryColor: '#3b82f6',
+        secondaryColor: '#1e40af',
+        fontFamily: 'Inter',
+        backgroundColor: '#ffffff',
+        textColor: '#1f2937',
+      };
+
+      if (templateId === 'minimalist2') {
+        defaultStyling = {
+          ...defaultStyling,
+          primaryColor: '#ef4444',
+          secondaryColor: '#991b1b',
         };
-        set({ 
-          currentPortfolio: newPortfolio,
-          selectedTemplate: templateId,
-          isEditing: true 
-        });
-      },
-      
-      updatePortfolioSection: (sectionName, data) => {
-        const currentPortfolio = get().currentPortfolio;
-        const updatedPortfolio = {
-          ...currentPortfolio,
-          sections: {
-            ...currentPortfolio.sections,
-            [sectionName]: {
-              ...currentPortfolio.sections[sectionName],
-              ...data,
-            },
+      }
+
+      if (templateId === 'minimalist3') {
+        defaultStyling = {
+          ...defaultStyling,
+          primaryColor: '#16a34a',
+          secondaryColor: '#14532d',
+        };
+      }
+
+      const newPortfolio = {
+        ...defaultPortfolio,
+        id: Date.now().toString(),
+        template: templateId,
+        styling: defaultStyling,
+        lastModified: new Date().toISOString(),
+      };
+      set({
+        currentPortfolio: newPortfolio,
+        selectedTemplate: templateId,
+        isEditing: true,
+      });
+    },
+
+    updatePortfolioSection: (sectionName, data) => {
+      const currentPortfolio = get().currentPortfolio;
+      const updatedPortfolio = {
+        ...currentPortfolio,
+        sections: {
+          ...currentPortfolio.sections,
+          [sectionName]: {
+            ...currentPortfolio.sections[sectionName],
+            ...data,
           },
-          lastModified: new Date().toISOString(),
-        };
-        set({ currentPortfolio: updatedPortfolio });
-      },
-      
-      updatePortfolioStyling: (stylingData) => {
-        const currentPortfolio = get().currentPortfolio;
-        const updatedPortfolio = {
-          ...currentPortfolio,
-          styling: {
-            ...currentPortfolio.styling,
-            ...stylingData,
-          },
-          lastModified: new Date().toISOString(),
-        };
-        set({ currentPortfolio: updatedPortfolio });
-      },
-      
-      updatePortfolioTitle: (title) => {
-        const currentPortfolio = get().currentPortfolio;
-        set({ 
-          currentPortfolio: {
-            ...currentPortfolio,
-            title,
-            lastModified: new Date().toISOString(),
-          }
+        },
+        lastModified: new Date().toISOString(),
+      };
+
+      const { savedPortfolios } = get();
+      const existingIndex = savedPortfolios.findIndex(
+        (p) => p.id === updatedPortfolio.id
+      );
+      let updatedPortfolios = [...savedPortfolios];
+      if (existingIndex >= 0) {
+        updatedPortfolios[existingIndex] = updatedPortfolio;
+      }
+      saveToLocalStorage(updatedPortfolios);
+
+      set({
+        currentPortfolio: updatedPortfolio,
+        savedPortfolios: updatedPortfolios,
+      });
+    },
+
+    updatePortfolioStyling: (stylingData) => {
+      const currentPortfolio = get().currentPortfolio;
+      const updatedPortfolio = {
+        ...currentPortfolio,
+        styling: {
+          ...currentPortfolio.styling,
+          ...stylingData,
+        },
+        lastModified: new Date().toISOString(),
+      };
+
+      const { savedPortfolios } = get();
+      const existingIndex = savedPortfolios.findIndex(
+        (p) => p.id === updatedPortfolio.id
+      );
+      let updatedPortfolios = [...savedPortfolios];
+      if (existingIndex >= 0) {
+        updatedPortfolios[existingIndex] = updatedPortfolio;
+      }
+      saveToLocalStorage(updatedPortfolios);
+
+      set({
+        currentPortfolio: updatedPortfolio,
+        savedPortfolios: updatedPortfolios,
+      });
+    },
+
+    updatePortfolioTitle: (title) => {
+      const currentPortfolio = get().currentPortfolio;
+      const updatedPortfolio = {
+        ...currentPortfolio,
+        title,
+        lastModified: new Date().toISOString(),
+      };
+
+      const { savedPortfolios } = get();
+      const existingIndex = savedPortfolios.findIndex(
+        (p) => p.id === updatedPortfolio.id
+      );
+      let updatedPortfolios = [...savedPortfolios];
+      if (existingIndex >= 0) {
+        updatedPortfolios[existingIndex] = updatedPortfolio;
+      }
+      saveToLocalStorage(updatedPortfolios);
+
+      set({
+        currentPortfolio: updatedPortfolio,
+        savedPortfolios: updatedPortfolios,
+      });
+    },
+
+    savePortfolio: () => {
+      const { currentPortfolio, savedPortfolios } = get();
+      const existingIndex = savedPortfolios.findIndex(
+        (p) => p.id === currentPortfolio.id
+      );
+
+      let updatedPortfolios;
+      if (existingIndex >= 0) {
+        updatedPortfolios = [...savedPortfolios];
+        updatedPortfolios[existingIndex] = currentPortfolio;
+      } else {
+        updatedPortfolios = [...savedPortfolios, currentPortfolio];
+      }
+
+      saveToLocalStorage(updatedPortfolios);
+      set({ savedPortfolios: updatedPortfolios });
+      return currentPortfolio;
+    },
+
+    loadPortfolio: (portfolioId) => {
+      const { savedPortfolios } = get();
+      const portfolio = savedPortfolios.find((p) => p.id === portfolioId);
+      if (portfolio) {
+        set({
+          currentPortfolio: portfolio,
+          selectedTemplate: portfolio.template,
+          isEditing: true,
         });
-      },
-      
-      savePortfolio: () => {
-        const { currentPortfolio, savedPortfolios } = get();
-        const existingIndex = savedPortfolios.findIndex(p => p.id === currentPortfolio.id);
-        
-        let updatedPortfolios;
-        if (existingIndex >= 0) {
-          updatedPortfolios = [...savedPortfolios];
-          updatedPortfolios[existingIndex] = currentPortfolio;
-        } else {
-          updatedPortfolios = [...savedPortfolios, currentPortfolio];
-        }
-        
-        saveToLocalStorage(updatedPortfolios);
-        set({ savedPortfolios: updatedPortfolios });
-        return currentPortfolio;
-      },
-      
-      loadPortfolio: (portfolioId) => {
-        const { savedPortfolios } = get();
-        const portfolio = savedPortfolios.find(p => p.id === portfolioId);
-        if (portfolio) {
-          set({ 
-            currentPortfolio: portfolio,
-            selectedTemplate: portfolio.template,
-            isEditing: true 
-          });
-        }
-      },
-      
-      deletePortfolio: (portfolioId) => {
-        const { savedPortfolios } = get();
-        const updatedPortfolios = savedPortfolios.filter(p => p.id !== portfolioId);
-        saveToLocalStorage(updatedPortfolios);
-        set({ savedPortfolios: updatedPortfolios });
-      },
-      
-      resetCurrentPortfolio: () => {
-        set({ 
-          currentPortfolio: { ...defaultPortfolio },
-          isEditing: false,
-          selectedTemplate: null 
-        });
-      },
-      
-      // Array manipulation helpers
-      addProjectItem: (project) => {
-        const currentPortfolio = get().currentPortfolio;
-        const newProject = {
-          id: Date.now().toString(),
-          title: '',
-          description: '',
-          technologies: [],
-          liveUrl: '',
-          githubUrl: '',
-          image: null,
-          ...project,
-        };
-        
-        const updatedPortfolio = {
-          ...currentPortfolio,
-          sections: {
-            ...currentPortfolio.sections,
-            projects: {
-              items: [...currentPortfolio.sections.projects.items, newProject],
-            },
+      }
+    },
+
+    deletePortfolio: (portfolioId) => {
+      const { savedPortfolios } = get();
+      const updatedPortfolios = savedPortfolios.filter(
+        (p) => p.id !== portfolioId
+      );
+      saveToLocalStorage(updatedPortfolios);
+      set({ savedPortfolios: updatedPortfolios });
+    },
+
+    resetCurrentPortfolio: () => {
+      set({
+        currentPortfolio: { ...defaultPortfolio },
+        isEditing: false,
+        selectedTemplate: null,
+      });
+    },
+
+    // ✅ Project helpers
+    addProjectItem: (project) => {
+      const currentPortfolio = get().currentPortfolio;
+      const newProject = {
+        id: Date.now().toString(),
+        title: '',
+        description: '',
+        technologies: [],
+        liveUrl: '',
+        githubUrl: '',
+        image: null,
+        ...project,
+      };
+
+      const updatedPortfolio = {
+        ...currentPortfolio,
+        sections: {
+          ...currentPortfolio.sections,
+          projects: {
+            items: [...currentPortfolio.sections.projects.items, newProject],
           },
-          lastModified: new Date().toISOString(),
-        };
-        set({ currentPortfolio: updatedPortfolio });
-      },
-      
-      updateProjectItem: (projectId, data) => {
-        const currentPortfolio = get().currentPortfolio;
-        const updatedProjects = currentPortfolio.sections.projects.items.map(project =>
+        },
+        lastModified: new Date().toISOString(),
+      };
+      set({ currentPortfolio: updatedPortfolio });
+    },
+
+    updateProjectItem: (projectId, data) => {
+      const currentPortfolio = get().currentPortfolio;
+      const updatedProjects =
+        currentPortfolio.sections.projects.items.map((project) =>
           project.id === projectId ? { ...project, ...data } : project
         );
-        
-        const updatedPortfolio = {
-          ...currentPortfolio,
-          sections: {
-            ...currentPortfolio.sections,
-            projects: { items: updatedProjects },
-          },
-          lastModified: new Date().toISOString(),
-        };
-        set({ currentPortfolio: updatedPortfolio });
-      },
-      
-      removeProjectItem: (projectId) => {
-        const currentPortfolio = get().currentPortfolio;
-        const updatedProjects = currentPortfolio.sections.projects.items.filter(
-          project => project.id !== projectId
+
+      const updatedPortfolio = {
+        ...currentPortfolio,
+        sections: {
+          ...currentPortfolio.sections,
+          projects: { items: updatedProjects },
+        },
+        lastModified: new Date().toISOString(),
+      };
+      set({ currentPortfolio: updatedPortfolio });
+    },
+
+    removeProjectItem: (projectId) => {
+      const currentPortfolio = get().currentPortfolio;
+      const updatedProjects =
+        currentPortfolio.sections.projects.items.filter(
+          (project) => project.id !== projectId
         );
-        
-        const updatedPortfolio = {
-          ...currentPortfolio,
-          sections: {
-            ...currentPortfolio.sections,
-            projects: { items: updatedProjects },
+
+      const updatedPortfolio = {
+        ...currentPortfolio,
+        sections: {
+          ...currentPortfolio.sections,
+          projects: { items: updatedProjects },
+        },
+        lastModified: new Date().toISOString(),
+      };
+      set({ currentPortfolio: updatedPortfolio });
+    },
+
+    // ✅ Skills helpers
+    addSkillItem: (skill) => {
+      const currentPortfolio = get().currentPortfolio;
+      const newSkill = {
+        id: Date.now().toString(),
+        name: '',
+        level: 'Intermediate',
+        category: 'Technical',
+        ...skill,
+      };
+
+      const updatedPortfolio = {
+        ...currentPortfolio,
+        sections: {
+          ...currentPortfolio.sections,
+          skills: {
+            items: [...currentPortfolio.sections.skills.items, newSkill],
           },
-          lastModified: new Date().toISOString(),
-        };
-        set({ currentPortfolio: updatedPortfolio });
-      },
-      
-      // Similar helpers for skills, experience, education
-      addSkillItem: (skill) => {
-        const currentPortfolio = get().currentPortfolio;
-        const newSkill = {
-          id: Date.now().toString(),
-          name: '',
-          level: 'Intermediate',
-          category: 'Technical',
-          ...skill,
-        };
-        
-        const updatedPortfolio = {
-          ...currentPortfolio,
-          sections: {
-            ...currentPortfolio.sections,
-            skills: {
-              items: [...currentPortfolio.sections.skills.items, newSkill],
-            },
+        },
+        lastModified: new Date().toISOString(),
+      };
+      set({ currentPortfolio: updatedPortfolio });
+    },
+
+    updateSkillItem: (skillId, data) => {
+      const currentPortfolio = get().currentPortfolio;
+      const updatedSkills =
+        currentPortfolio.sections.skills.items.map((skill) =>
+          skill.id === skillId ? { ...skill, ...data } : skill
+        );
+
+      const updatedPortfolio = {
+        ...currentPortfolio,
+        sections: {
+          ...currentPortfolio.sections,
+          skills: { items: updatedSkills },
+        },
+        lastModified: new Date().toISOString(),
+      };
+      set({ currentPortfolio: updatedPortfolio });
+    },
+
+    removeSkillItem: (skillId) => {
+      const currentPortfolio = get().currentPortfolio;
+      const updatedSkills =
+        currentPortfolio.sections.skills.items.filter(
+          (skill) => skill.id !== skillId
+        );
+
+      const updatedPortfolio = {
+        ...currentPortfolio,
+        sections: {
+          ...currentPortfolio.sections,
+          skills: { items: updatedSkills },
+        },
+        lastModified: new Date().toISOString(),
+      };
+      set({ currentPortfolio: updatedPortfolio });
+    },
+
+    // ✅ Experience helpers
+    addExperienceItem: (experience) => {
+      const currentPortfolio = get().currentPortfolio;
+      const newExperience = {
+        id: Date.now().toString(),
+        company: '',
+        position: '',
+        startDate: '',
+        endDate: '',
+        current: false,
+        description: '',
+        ...experience,
+      };
+
+      const updatedPortfolio = {
+        ...currentPortfolio,
+        sections: {
+          ...currentPortfolio.sections,
+          experience: {
+            items: [...currentPortfolio.sections.experience.items, newExperience],
           },
-          lastModified: new Date().toISOString(),
-        };
-        set({ currentPortfolio: updatedPortfolio });
-      },
-      
-      addExperienceItem: (experience) => {
-        const currentPortfolio = get().currentPortfolio;
-        const newExperience = {
-          id: Date.now().toString(),
-          company: '',
-          position: '',
-          startDate: '',
-          endDate: '',
-          current: false,
-          description: '',
-          ...experience,
-        };
-        
-        const updatedPortfolio = {
-          ...currentPortfolio,
-          sections: {
-            ...currentPortfolio.sections,
-            experience: {
-              items: [...currentPortfolio.sections.experience.items, newExperience],
-            },
+        },
+        lastModified: new Date().toISOString(),
+      };
+      set({ currentPortfolio: updatedPortfolio });
+    },
+
+    // ✅ Education helpers
+    addEducationItem: (education) => {
+      const currentPortfolio = get().currentPortfolio;
+      const newEducation = {
+        id: Date.now().toString(),
+        school: '',
+        degree: '',
+        startDate: '',
+        endDate: '',
+        description: '',
+        ...education,
+      };
+
+      const updatedPortfolio = {
+        ...currentPortfolio,
+        sections: {
+          ...currentPortfolio.sections,
+          education: {
+            items: [...currentPortfolio.sections.education.items, newEducation],
           },
-          lastModified: new Date().toISOString(),
-        };
-        set({ currentPortfolio: updatedPortfolio });
-      },
+        },
+        lastModified: new Date().toISOString(),
+      };
+      set({ currentPortfolio: updatedPortfolio });
+    },
   };
 });
-
-

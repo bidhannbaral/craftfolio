@@ -6,9 +6,9 @@ const AboutEditor = () => {
   const { about } = currentPortfolio.sections;
   const [imagePreview, setImagePreview] = useState(about.profileImage);
 
-  const handleInputChange = (field, value) => {
-    updatePortfolioSection('about', { [field]: value });
-  };
+ const handleInputChange = (field, value) => {
+  updatePortfolioSection('about', { [field]: value });
+};
 
   const handleTitleChange = (value) => {
     updatePortfolioTitle(value);
@@ -17,7 +17,6 @@ const AboutEditor = () => {
   const handleImageUpload = (event) => {
     const file = event.target.files[0];
     if (file) {
-      // Convert to base64 for storage without backend
       const reader = new FileReader();
       reader.onload = (e) => {
         const base64Image = e.target.result;
@@ -32,8 +31,9 @@ const AboutEditor = () => {
     setImagePreview(null);
     handleInputChange('profileImage', null);
   };
- 
-  
+
+  const activeTemplate = currentPortfolio.template;
+
   return (
     <div className="space-y-6">
       <div>
@@ -45,6 +45,40 @@ const AboutEditor = () => {
           Tell your story and make a great first impression. This section appears at the top of your portfolio.
         </p>
       </div>
+
+      {/* ✅ Hero Banner (excluded for minimalist & minimalist2) */}
+      {activeTemplate !== 'minimalist' && activeTemplate !== 'minimalist2' && (
+        <div className="form-control">
+          <label className="label">
+            <span className="label-text font-semibold">Hero Banner Image</span>
+            <span className="label-text-alt">Optional</span>
+          </label>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={(e) => {
+              const file = e.target.files[0];
+              if (file) {
+                const reader = new FileReader();
+                reader.onload = (ev) => {
+                  handleInputChange('heroBanner', ev.target.result);
+                };
+                reader.readAsDataURL(file);
+              }
+            }}
+            className="file-input file-input-bordered w-full max-w-xs"
+          />
+          {about.heroBanner && (
+            <div className="mt-4">
+              <img
+                src={about.heroBanner}
+                alt="Hero Banner Preview"
+                className="w-full max-h-48 object-cover rounded-lg shadow"
+              />
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Portfolio Title */}
       <div className="form-control">
@@ -70,9 +104,7 @@ const AboutEditor = () => {
           <span className="label-text font-semibold">Profile Image</span>
           <span className="label-text-alt">Optional</span>
         </label>
-        
         <div className="flex items-start gap-4">
-          {/* Image Preview */}
           <div className="flex-shrink-0">
             {imagePreview ? (
               <div className="relative">
@@ -91,14 +123,22 @@ const AboutEditor = () => {
               </div>
             ) : (
               <div className="w-24 h-24 bg-base-300 rounded-full flex items-center justify-center border-2 border-dashed border-base-content/20">
-                <svg className="w-8 h-8 text-base-content/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                <svg
+                  className="w-8 h-8 text-base-content/40"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                  />
                 </svg>
               </div>
             )}
           </div>
-          
-          {/* Upload Controls */}
           <div className="flex-1">
             <input
               type="file"
@@ -106,96 +146,83 @@ const AboutEditor = () => {
               onChange={handleImageUpload}
               className="file-input file-input-bordered w-full max-w-xs"
             />
-            <div className="mt-2">
-              <p className="text-sm text-base-content/60">
-                Upload a professional headshot or avatar image. Recommended: Square image, at least 300x300px.
-              </p>
-            </div>
           </div>
         </div>
       </div>
 
-      
-
-      <div className="space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Full Name */}
-          <div className="form-control">
-            <label className="label">
-              <span className="label-text font-semibold">Full Name</span>
-              <span className="label-text-alt text-error">Required</span>
-            </label>
-            <input
-              type="text"
-              placeholder="John Doe"
-              className="input input-bordered w-full"
-              value={about.name}
-              onChange={(e) => handleInputChange('name', e.target.value)}
-            />
-          </div>
-
-          {/* Professional Title */}
-          <div className="form-control">
-            <label className="label">
-              <span className="label-text font-semibold">Professional Title</span>
-              <span className="label-text-alt text-error">Required</span>
-            </label>
-            <input
-              type="text"
-              placeholder="Full Stack Developer"
-              className="input input-bordered w-full"
-              value={about.title}
-              onChange={(e) => handleInputChange('title', e.target.value)}
-            />
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Email */}
-          <div className="form-control">
-            <label className="label">
-              <span className="label-text font-semibold">Email</span>
-              <span className="label-text-alt">Optional</span>
-            </label>
-            <input
-              type="email"
-              placeholder="john.doe@example.com"
-              className="input input-bordered w-full"
-              value={about.email}
-              onChange={(e) => handleInputChange('email', e.target.value)}
-            />
-          </div>
-
-          {/* Phone */}
-          <div className="form-control">
-            <label className="label">
-              <span className="label-text font-semibold">Phone</span>
-              <span className="label-text-alt">Optional</span>
-            </label>
-            <input
-              type="tel"
-              placeholder="+1 (555) 123-4567"
-              className="input input-bordered w-full"
-              value={about.phone}
-              onChange={(e) => handleInputChange('phone', e.target.value)}
-            />
-          </div>
-        </div>
-
-        {/* Location */}
+      {/* Full Name & Title */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="form-control">
           <label className="label">
-            <span className="label-text font-semibold">Location</span>
-            <span className="label-text-alt">Optional</span>
+            <span className="label-text font-semibold">Full Name</span>
+            <span className="label-text-alt text-error">Required</span>
           </label>
           <input
             type="text"
-            placeholder="San Francisco, CA"
+            placeholder="John Doe"
             className="input input-bordered w-full"
-            value={about.location}
-            onChange={(e) => handleInputChange('location', e.target.value)}
+            value={about.name}
+            onChange={(e) => handleInputChange('name', e.target.value)}
           />
         </div>
+        <div className="form-control">
+          <label className="label">
+            <span className="label-text font-semibold">Professional Title</span>
+            <span className="label-text-alt text-error">Required</span>
+          </label>
+          <input
+            type="text"
+            placeholder="Full Stack Developer"
+            className="input input-bordered w-full"
+            value={about.title}
+            onChange={(e) => handleInputChange('title', e.target.value)}
+          />
+        </div>
+      </div>
+
+      {/* Email & Phone */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="form-control">
+          <label className="label">
+            <span className="label-text font-semibold">Email</span>
+            <span className="label-text-alt">Optional</span>
+          </label>
+          <input
+            type="email"
+            placeholder="john.doe@example.com"
+            className="input input-bordered w-full"
+            value={about.email}
+            onChange={(e) => handleInputChange('email', e.target.value)}
+          />
+        </div>
+        <div className="form-control">
+          <label className="label">
+            <span className="label-text font-semibold">Phone</span>
+            <span className="label-text-alt">Optional</span>
+          </label>
+          <input
+            type="tel"
+            placeholder="+1 (555) 123-4567"
+            className="input input-bordered w-full"
+            value={about.phone}
+            onChange={(e) => handleInputChange('phone', e.target.value)}
+          />
+        </div>
+      </div>
+
+      {/* Location */}
+      <div className="form-control">
+        <label className="label">
+          <span className="label-text font-semibold">Location</span>
+          <span className="label-text-alt">Optional</span>
+        </label>
+        <input
+          type="text"
+          placeholder="San Francisco, CA"
+          className="input input-bordered w-full"
+          value={about.location}
+          onChange={(e) => handleInputChange('location', e.target.value)}
+        />
       </div>
 
       {/* Description */}
