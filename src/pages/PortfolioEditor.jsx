@@ -4,10 +4,14 @@ import AboutEditor from '../components/editor/AboutEditor';
 import ProjectsEditor from '../components/editor/ProjectsEditor';
 import SkillsEditor from '../components/editor/SkillsEditor';
 import ExperienceEditor from '../components/editor/ExperienceEditor';
+import SocialProofEditor from '../components/editor/SocialProofEditor';
 import ContactEditor from '../components/editor/ContactEditor';
+import MediaShowcaseEditor from '../components/editor/MediaShowcaseEditor';
 import StylingEditor from '../components/editor/StylingEditor';
 import PortfolioPreview from '../components/preview/PortfolioPreview';
+import AchievementsEditor from '../components/editor/AchievementsEditor'
 import { exportPortfolioAsJSON, exportPortfolioAsHTML, importPortfolioFromJSON } from '../utils/exportUtils';
+
 
 const PortfolioEditor = () => {
   const {
@@ -21,14 +25,46 @@ const PortfolioEditor = () => {
   const [showPreview, setShowPreview] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
-  const tabs = [
-    { id: 'about', label: 'About', icon: '👤' },
-    { id: 'projects', label: 'Projects', icon: '💼' },
-    { id: 'skills', label: 'Skills', icon: '🛠️' },
-    { id: 'experience', label: 'Experience', icon: '📈' },
-    { id: 'contact', label: 'Contact', icon: '📧' },
-    { id: 'styling', label: 'Styling', icon: '🎨' },
-  ];
+ const tabs = [
+  { id: 'about', label: 'About', icon: '👤' },
+  { id: 'projects', label: 'Projects', icon: '💼' },
+  { id: 'skills', label: 'Skills', icon: '🛠️' },
+  { id: 'experience', label: 'Experience', icon: '📈' },
+  ...(currentPortfolio.template &&
+    ![
+      "minimalist",
+      "minimalist2",
+      "minimalist3",
+      "minimalist4",
+      "minimalist5",
+      "minimalist6",
+      
+    ].includes(currentPortfolio.template)
+    ? [{ id: "achievements", label: "Achievements", icon: "🏅" }]
+    : []),
+  ...(currentPortfolio.template &&
+    ![
+      "minimalist",
+      "minimalist2",
+      "minimalist3",
+      "minimalist4",
+      "minimalist5",
+      "minimalist6",
+      "minimalist7", 
+      "minimalist10",
+    ].includes(currentPortfolio.template)
+    ? [{ id: "socialProof", label: "Trusted & Feedback", icon: "🤝" }]
+    : []),
+
+    ...(currentPortfolio.template &&
+  !["minimalist", "minimalist2", "minimalist3", "minimalist4", "minimalist5", "minimalist6", "minimalist7", "minimalist8", "minimalist9"]
+    .includes(currentPortfolio.template)
+  ? [{ id: "media", label: "Media Showcase", icon: "🎥" }]
+  : []),
+
+  { id: 'contact', label: 'Contact', icon: '📧' },
+  { id: 'styling', label: 'Styling', icon: '🎨' },
+];
 
   const handleSave = async () => {
     setIsSaving(true);
@@ -66,23 +102,30 @@ const PortfolioEditor = () => {
   };
 
   const renderTabContent = () => {
-    switch (activeTab) {
-      case 'about':
-        return <AboutEditor />;
-      case 'projects':
-        return <ProjectsEditor />;
-      case 'skills':
-        return <SkillsEditor />;
-      case 'experience':
-        return <ExperienceEditor />;
-      case 'contact':
-        return <ContactEditor />;
-      case 'styling':
-        return <StylingEditor />;
-      default:
-        return <AboutEditor />;
-    }
-  };
+  switch (activeTab) {
+    case 'about':
+      return <AboutEditor />;
+    case 'projects':
+      return <ProjectsEditor />;
+    case 'skills':
+      return <SkillsEditor />;
+    case 'experience':
+      return <ExperienceEditor />;
+    case 'achievements':
+      return <AchievementsEditor />; 
+    case 'contact':
+      return <ContactEditor />;
+    case 'styling':
+      return <StylingEditor />;
+    case 'socialProof':
+      return <SocialProofEditor/>;
+     case 'media':
+      return <MediaShowcaseEditor/>;
+    default:
+      return <AboutEditor />;
+  }
+};
+
 
   if (showPreview) {
     return (
@@ -269,6 +312,20 @@ const PortfolioEditor = () => {
                     {currentPortfolio.sections.projects.items.length > 0 ? 'Added' : 'None'}
                   </div>
                 </div>
+
+                <div className="flex items-center justify-between text-sm">
+               <span>Media Showcase ({currentPortfolio.sections.media?.media?.length || 0})</span>
+              <div
+              className={`badge badge-sm ${
+                currentPortfolio.sections.media?.media?.length > 0
+                  ? 'badge-success'
+                  : 'badge-neutral'
+              }`}
+            >
+              {currentPortfolio.sections.media?.media?.length > 0 ? 'Added' : 'None'}
+            </div>
+          </div>
+
                 <div className="flex items-center justify-between text-sm">
                   <span>Skills ({currentPortfolio.sections.skills.items.length})</span>
                   <div className={`badge badge-sm ${currentPortfolio.sections.skills.items.length > 0 ? 'badge-success' : 'badge-neutral'}`}>
@@ -280,7 +337,46 @@ const PortfolioEditor = () => {
                   <div className={`badge badge-sm ${currentPortfolio.sections.experience.items.length > 0 ? 'badge-success' : 'badge-neutral'}`}>
                     {currentPortfolio.sections.experience.items.length > 0 ? 'Added' : 'None'}
                   </div>
+
                 </div>
+                  {!["minimalist", "minimalist2", "minimalist3", "minimalist4", "minimalist5", "minimalist6"]
+                  .includes(currentPortfolio.template) && (
+                  <div className="flex items-center justify-between text-sm">
+                    <span>Achievements</span>
+                    <div
+                      className={`badge badge-sm ${
+                        (currentPortfolio.sections.achievements?.milestones?.length > 0 ||
+                          currentPortfolio.sections.achievements?.certificates?.length > 0)
+                          ? "badge-success"
+                          : "badge-neutral"
+                      }`}
+                    >
+                      {(currentPortfolio.sections.achievements?.milestones?.length > 0 ||
+                        currentPortfolio.sections.achievements?.certificates?.length > 0)
+                        ? "Added"
+                        : "None"}
+                    </div>
+                  </div>
+                )}
+
+                <div className="flex items-center justify-between text-sm">
+                  <span>Trusted & Feedback</span>
+                  <div
+                    className={`badge badge-sm ${
+                      (currentPortfolio.sections.socialProof?.trustedBy?.length > 0 ||
+                        currentPortfolio.sections.socialProof?.feedback?.length > 0)
+                        ? "badge-success"
+                        : "badge-neutral"
+                    }`}
+                  >
+                    {(currentPortfolio.sections.socialProof?.trustedBy?.length > 0 ||
+                      currentPortfolio.sections.socialProof?.feedback?.length > 0)
+                      ? "Added"
+                      : "None"}
+                  </div>
+                </div>
+
+
                 <div className="flex items-center justify-between text-sm">
                   <span>Contact Info</span>
                   <div className={`badge badge-sm ${currentPortfolio.sections.contact.email ? 'badge-success' : 'badge-neutral'}`}>

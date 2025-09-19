@@ -8,16 +8,14 @@ const defaultPortfolio = {
   sections: {
     about: {
       name: '',
-      title: '',   //havenot used but gonna
-      tagline: '',          
+      tagline: '',
       description: '',
       email: '',
       phone: '',
       location: '',
       profileImage: null,
-      heroBanner: null,    
-      heroBannerImage: null, 
-      resumeUrl: '',        //havenot used
+      heroBanner: null,
+      heroBannerImage: null,
       heroHeadline: '',
       heroSubtext: '',
     },
@@ -39,6 +37,18 @@ const defaultPortfolio = {
       linkedin: '',
       github: '',
       website: '',
+    },
+    achievements: {
+      milestones: [],
+      certificates: [],
+    },
+    socialProof: {
+      trustedBy: [],
+      feedback: [],
+    },
+    media: {
+       images: [],
+       videos: []
     },
   },
   styling: {
@@ -422,6 +432,65 @@ export const usePortfolioStore = create((set, get) => {
           education: {
             items: [...currentPortfolio.sections.education.items, newEducation],
           },
+        },
+        lastModified: new Date().toISOString(),
+      };
+      set({ currentPortfolio: updatedPortfolio });
+    },
+
+    // ✅ Media helpers
+    addMediaItem: (media) => {
+      const currentPortfolio = get().currentPortfolio;
+      const newMedia = {
+        id: Date.now().toString(),
+        type: 'image', // or 'video'
+        url: '',
+        thumbnail: '',
+        caption: '',
+        ...media,
+      };
+
+      const updatedPortfolio = {
+        ...currentPortfolio,
+        sections: {
+          ...currentPortfolio.sections,
+          media: {
+            items: [...currentPortfolio.sections.media.items, newMedia],
+          },
+        },
+        lastModified: new Date().toISOString(),
+      };
+      set({ currentPortfolio: updatedPortfolio });
+    },
+
+    updateMediaItem: (mediaId, data) => {
+      const currentPortfolio = get().currentPortfolio;
+      const updatedMedia =
+        currentPortfolio.sections.media.items.map((m) =>
+          m.id === mediaId ? { ...m, ...data } : m
+        );
+
+      const updatedPortfolio = {
+        ...currentPortfolio,
+        sections: {
+          ...currentPortfolio.sections,
+          media: { items: updatedMedia },
+        },
+        lastModified: new Date().toISOString(),
+      };
+      set({ currentPortfolio: updatedPortfolio });
+    },
+
+    removeMediaItem: (mediaId) => {
+      const currentPortfolio = get().currentPortfolio;
+      const updatedMedia =
+        currentPortfolio.sections.media.items.filter((m) => m.id !== mediaId);
+
+      const updatedPortfolio = {
+        ...currentPortfolio,
+        sections: {
+          ...currentPortfolio.sections,
+          media: { items: updatedMedia },
         },
         lastModified: new Date().toISOString(),
       };

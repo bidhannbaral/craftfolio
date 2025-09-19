@@ -5,6 +5,10 @@ import MinimalistTemplate3 from '../templates/MinimalistTemplate3';
 import MinimalistTemplate4 from '../templates/MinimalistTemplate4';
 import MinimalistTemplate5 from '../templates/MinimalistTemplate5'; 
 import MinimalistTemplate6 from '../templates/MinimalistTemplate6'
+import MinimalistTemplate7 from '../templates/MinimalistTemplate7'
+import MinimalistTemplate8 from '../templates/MinimalistTemplate8'
+import MinimalistTemplate9 from '../templates/MinimalistTemplate9'
+import MinimalistTemplate10 from '../templates/MinimalistTemplate10'
 const PortfolioPreview = ({ portfolio }) => {
   const renderTemplate = () => {
     switch (portfolio.template) {
@@ -21,8 +25,18 @@ const PortfolioPreview = ({ portfolio }) => {
         return <MinimalistTemplate5 portfolio={portfolio} />;
       case 'minimalist6':
         return <MinimalistTemplate6 portfolio={portfolio} />;
-        
-      case 'minimalist': // default
+      case 'minimalist7':
+        return <MinimalistTemplate7 portfolio={portfolio} />;
+      case 'minimalist8':
+        return <MinimalistTemplate8 
+        portfolio={portfolio}/>
+      case 'minimalist9':
+        return <MinimalistTemplate9 
+        portfolio={portfolio}/>
+      case 'minimalist10':
+        return <MinimalistTemplate10
+        portfolio={portfolio}/>
+      case 'minimalist': 
       default:
         return <MinimalistTemplate portfolio={portfolio} />;
     }

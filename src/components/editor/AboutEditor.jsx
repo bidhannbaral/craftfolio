@@ -46,8 +46,8 @@ const AboutEditor = () => {
         </p>
       </div>
 
-      {/* ✅ Hero Banner (excluded for minimalist & minimalist2) */}
-      {activeTemplate !== 'minimalist' && activeTemplate !== 'minimalist2' && (
+   
+      {activeTemplate !== 'minimalist' && activeTemplate !== 'minimalist2' && activeTemplate !== 'minimalist8' && activeTemplate !== 'minimalist9' && (
         <div className="form-control">
           <label className="label">
             <span className="label-text font-semibold">Hero Banner Image</span>
