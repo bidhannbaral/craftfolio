@@ -9,10 +9,34 @@ const MinimalistTemplate9 = ({ portfolio }) => {
     skills,
     experience,
     achievements,
-    certificates,
     socialProof,
     contact,
   } = sections;
+
+  const { milestones = [], certificates = [] } = achievements || {};
+
+  // Group skills by category
+  const groupedSkills = skills.items.reduce((acc, skill) => {
+    const category = skill.category || "Other";
+    if (!acc[category]) acc[category] = [];
+    acc[category].push(skill);
+    return acc;
+  }, {});
+
+  const getSkillWidth = (level) => {
+    switch (level) {
+      case "Expert":
+        return "100%";
+      case "Advanced":
+        return "75%";
+      case "Intermediate":
+        return "50%";
+      case "Beginner":
+        return "25%";
+      default:
+        return "0%";
+    }
+  };
 
   return (
     <div
@@ -83,64 +107,105 @@ const MinimalistTemplate9 = ({ portfolio }) => {
       <section className="grid md:grid-cols-2 gap-12 p-12">
         {/* Left Column */}
         <div className="space-y-12">
-          {/* Skills */}
+          {/* Skills (grouped) */}
           {skills.items.length > 0 && (
-            <div className="max-w-sm">
+            <div>
               <h2
                 className="text-2xl font-bold mb-6"
                 style={{ color: styling.primaryColor }}
               >
                 Skills
               </h2>
-              <div className="space-y-4">
-                {skills.items.map((s) => (
-                  <div key={s.id}>
-                    <div className="flex justify-between mb-2">
-                      <span>{s.name}</span>
-                      <span className="text-sm text-gray-500">{s.level}</span>
-                    </div>
-                    <div className="h-2 bg-gray-200 rounded-full">
-                      <div
-                        className="h-2 rounded-full"
-                        style={{
-                          width:
-                            s.level === "Expert"
-                              ? "100%"
-                              : s.level === "Advanced"
-                              ? "75%"
-                              : s.level === "Intermediate"
-                              ? "50%"
-                              : "25%",
-                          backgroundColor: styling.primaryColor,
-                        }}
-                      />
-                    </div>
+              {Object.keys(groupedSkills).map((category) => (
+                <div key={category} className="mb-6">
+                  <h3 className="text-lg font-semibold mb-3">{category}</h3>
+                  <div className="space-y-4">
+                    {groupedSkills[category].map((s) => (
+                      <div key={s.id}>
+                        <div className="flex justify-between mb-2">
+                          <span>{s.name}</span>
+                          <span className="text-sm text-gray-500">
+                            {s.level}
+                          </span>
+                        </div>
+                        <div className="h-2 bg-gray-200 rounded-full">
+                          <div
+                            className="h-2 rounded-full"
+                            style={{
+                              width: getSkillWidth(s.level),
+                              backgroundColor: styling.primaryColor,
+                            }}
+                          />
+                        </div>
+                      </div>
+                    ))}
                   </div>
-                ))}
-              </div>
+                </div>
+              ))}
             </div>
           )}
 
-          {/* Milestones */}
-          {achievements?.milestones?.length > 0 && (
+          {/* Achievements horizontal */}
+          {milestones.length > 0 && (
             <div>
               <h2
                 className="text-2xl font-bold mb-6"
                 style={{ color: styling.primaryColor }}
               >
-                Milestones
+                Achievements
               </h2>
-              <div className="grid grid-cols-2 gap-6 text-center">
-                {achievements.milestones.map((m, idx) => (
-                  <div key={idx} className="p-4 bg-white shadow rounded-lg">
-                    <h3 className="text-2xl font-extrabold">{m.number}</h3>
+              <div className="flex flex-wrap justify-center gap-6">
+                {milestones.map((m, idx) => (
+                  <div
+                    key={idx}
+                    className="p-6 bg-white shadow rounded-lg text-center w-48"
+                  >
+                    <h3
+                      className="text-3xl font-extrabold"
+                      style={{ color: styling.primaryColor }}
+                    >
+                      {m.number}
+                    </h3>
                     <p className="text-sm text-gray-600">{m.label}</p>
                   </div>
                 ))}
               </div>
             </div>
           )}
+        </div>
 
+        {/* Right Column */}
+        <div>
+          {/* About */}
+          <div className="mb-12">
+            <h2
+              className="text-2xl font-bold mb-6"
+              style={{ color: styling.primaryColor }}
+            >
+              About Me
+            </h2>
+            {about.profileImage && (
+              <img
+                src={about.profileImage}
+                alt={about.name}
+                className="w-32 h-32 rounded-full mb-4 object-cover"
+              />
+            )}
+            <h3 className="text-xl font-semibold">{about.name || title}</h3>
+            <p className="text-sm text-gray-500 mb-4">{about.title}</p>
+            <p className="text-gray-600 mb-4">{about.description}</p>
+            <p className="text-sm text-gray-500">
+              {about.email && <>📧 {about.email} <br /></>}
+              {about.phone && <>📞 {about.phone} <br /></>}
+              {about.location && <>📍 {about.location}</>}
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Experience + Certificates side by side */}
+      {(experience.items.length > 0 || certificates.length > 0) && (
+        <section className="grid md:grid-cols-2 gap-12 p-12 bg-gray-50">
           {/* Experience */}
           {experience.items.length > 0 && (
             <div>
@@ -154,7 +219,7 @@ const MinimalistTemplate9 = ({ portfolio }) => {
                 {experience.items.map((exp) => (
                   <div
                     key={exp.id}
-                    className="p-4 bg-white rounded-lg shadow border-l-4"
+                    className="p-6 bg-white rounded-lg shadow border-l-4"
                     style={{ borderLeftColor: styling.primaryColor }}
                   >
                     <h3 className="font-semibold">{exp.position}</h3>
@@ -170,60 +235,40 @@ const MinimalistTemplate9 = ({ portfolio }) => {
               </div>
             </div>
           )}
-        </div>
 
-        {/* Right Column */}
-        <div>
-          {/* About */}
-          <div className="mb-12 ">
-            <h2
-              className="text-2xl font-bold mb-6"
-              style={{ color: styling.primaryColor }}
-            >
-              About Me
-            </h2>
-            {about.profileImage && (
-              <img
-                src={about.profileImage}
-                alt={about.name}
-                className="w-32 h-32 rounded-full mb-4 object-cover "
-              />
-            )}
-            <h3 className="text-xl font-semibold">{about.name || title}</h3>
-            <p className="text-sm text-gray-500 mb-4">{about.title}</p>
-            <p className="text-gray-600">{about.description}</p>
-          </div>
-        </div>
-      </section>
-
-      {/* Certificates */}
-      {certificates?.length > 0 && (
-        <section id="certificates" className="p-12 bg-gray-50">
-          <h2
-            className="text-2xl font-bold mb-6 text-center"
-            style={{ color: styling.primaryColor }}
-          >
-            Certificates
-          </h2>
-          <div className="grid md:grid-cols-2 gap-6">
-            {certificates.map((c, idx) => (
-              <div key={idx} className="p-6 bg-white rounded-lg shadow">
-                <h3 className="font-semibold text-xl mb-2">{c.title}</h3>
-                <p className="text-gray-600">{c.issuer}</p>
-                <p className="text-sm text-gray-500">{c.date}</p>
-                {c.link && (
-                  <a
-                    href={c.link}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-blue-600 text-sm underline mt-2 inline-block"
+          {/* Certificates (from achievements) */}
+          {certificates.length > 0 && (
+            <div>
+              <h2
+                className="text-2xl font-bold mb-6"
+                style={{ color: styling.primaryColor }}
+              >
+                Certificates
+              </h2>
+              <div className="space-y-6">
+                {certificates.map((c, idx) => (
+                  <div
+                    key={idx}
+                    className="p-6 bg-white rounded-lg shadow"
                   >
-                    View Certificate
-                  </a>
-                )}
+                    <h3 className="font-semibold text-xl mb-2">{c.title}</h3>
+                    <p className="text-gray-600">{c.issuer}</p>
+                    <p className="text-sm text-gray-500">{c.date}</p>
+                    {c.link && (
+                      <a
+                        href={c.link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-600 text-sm underline mt-2 inline-block"
+                      >
+                        View Certificate
+                      </a>
+                    )}
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
+            </div>
+          )}
         </section>
       )}
 
@@ -244,7 +289,7 @@ const MinimalistTemplate9 = ({ portfolio }) => {
                   key={logo.id}
                   src={logo.logo}
                   alt="Trusted logo"
-                  className="h-12 object-contain grayscale"
+                  className="h-16 object-contain grayscale"
                 />
               ))}
             </div>
@@ -254,13 +299,13 @@ const MinimalistTemplate9 = ({ portfolio }) => {
               {socialProof.feedback.map((fb) => (
                 <div
                   key={fb.id}
-                  className="p-6 bg-white rounded-lg shadow text-center"
+                  className="p-6 bg-white rounded-lg shadow text-left"
                 >
                   {fb.avatar && (
                     <img
                       src={fb.avatar}
                       alt="Client avatar"
-                      className="w-16 h-16 rounded-full mx-auto mb-4"
+                      className="w-16 h-16 rounded-full mb-4 object-cover"
                     />
                   )}
                   {fb.message && (
@@ -294,6 +339,26 @@ const MinimalistTemplate9 = ({ portfolio }) => {
               className="px-6 py-3 border border-white rounded"
             >
               LinkedIn
+            </a>
+          )}
+          {contact.github && (
+            <a
+              href={contact.github}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-6 py-3 border border-white rounded"
+            >
+              GitHub
+            </a>
+          )}
+          {contact.website && (
+            <a
+              href={contact.website}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-6 py-3 border border-white rounded"
+            >
+              Website
             </a>
           )}
           {contact.twitter && (

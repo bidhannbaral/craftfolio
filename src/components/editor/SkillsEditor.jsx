@@ -1,35 +1,40 @@
-import React, { useState, useMemo } from 'react';
-import { usePortfolioStore } from '../../store/portfolioStore';
+// src/components/editor/SkillsEditor.jsx
+import React, { useState, useMemo } from "react";
+import { usePortfolioStore } from "../../store/portfolioStore";
 
 const SkillsEditor = () => {
-  // Grab portfolio + a compatible update function (supports both naming styles)
   const currentPortfolio = usePortfolioStore((s) => s.currentPortfolio);
   const updateSection =
     usePortfolioStore((s) => s.updatePortfolioSection) ||
     usePortfolioStore((s) => s.updateSection);
 
-  // Safe access with fallbacks
+  // Safe access
   const skills = currentPortfolio?.sections?.skills || { items: [] };
   const items = Array.isArray(skills.items) ? skills.items : [];
 
   const [newSkill, setNewSkill] = useState({
-    name: '',
-    level: 'Intermediate',
-    category: 'Technical',
+    name: "",
+    level: "Intermediate",
+    category: "Technical",
   });
 
-  const skillLevels = ['Beginner', 'Intermediate', 'Advanced', 'Expert'];
-  const skillCategories = ['Technical', 'Soft Skills', 'Languages', 'Tools', 'Frameworks'];
+  const skillLevels = ["Beginner", "Intermediate", "Advanced", "Expert"];
+  const skillCategories = [
+    "Technical",
+    "Soft Skills",
+    "Languages",
+    "Tools",
+    "Frameworks",
+  ];
 
   const genId = () => {
-    if (typeof crypto !== 'undefined' && crypto.randomUUID) return crypto.randomUUID();
+    if (typeof crypto !== "undefined" && crypto.randomUUID)
+      return crypto.randomUUID();
     return `skill_${Date.now()}_${Math.random().toString(16).slice(2)}`;
-    // fallback for older browsers
   };
 
   const saveItems = (nextItems) => {
-    // Preserve other fields under skills if you add any later
-    updateSection('skills', { ...skills, items: nextItems });
+    updateSection("skills", { ...skills, items: nextItems });
   };
 
   const handleAddSkill = () => {
@@ -45,7 +50,7 @@ const SkillsEditor = () => {
       },
     ];
     saveItems(next);
-    setNewSkill({ name: '', level: 'Intermediate', category: 'Technical' });
+    setNewSkill({ name: "", level: "Intermediate", category: "Technical" });
   };
 
   const handleUpdateSkill = (skillId, field, value) => {
@@ -64,13 +69,14 @@ const SkillsEditor = () => {
     const groups = {};
     for (const category of skillCategories) groups[category] = [];
     for (const skill of items) {
-      const cat = skill.category && groups.hasOwnProperty(skill.category)
-        ? skill.category
-        : 'Technical';
+      const cat =
+        skill.category && groups.hasOwnProperty(skill.category)
+          ? skill.category
+          : "Technical";
       groups[cat].push(skill);
     }
     return groups;
-  }, [items]); // categories are static
+  }, [items]);
 
   return (
     <div className="space-y-6">
@@ -99,7 +105,9 @@ const SkillsEditor = () => {
                 placeholder="Skill name (e.g., React, JavaScript)"
                 className="input input-bordered w-full"
                 value={newSkill.name}
-                onChange={(e) => setNewSkill({ ...newSkill, name: e.target.value })}
+                onChange={(e) =>
+                  setNewSkill({ ...newSkill, name: e.target.value })
+                }
               />
             </div>
 
@@ -111,7 +119,9 @@ const SkillsEditor = () => {
                 <select
                   className="select select-bordered w-full"
                   value={newSkill.level}
-                  onChange={(e) => setNewSkill({ ...newSkill, level: e.target.value })}
+                  onChange={(e) =>
+                    setNewSkill({ ...newSkill, level: e.target.value })
+                  }
                 >
                   {skillLevels.map((level) => (
                     <option key={level} value={level}>
@@ -128,7 +138,9 @@ const SkillsEditor = () => {
                 <select
                   className="select select-bordered w-full"
                   value={newSkill.category}
-                  onChange={(e) => setNewSkill({ ...newSkill, category: e.target.value })}
+                  onChange={(e) =>
+                    setNewSkill({ ...newSkill, category: e.target.value })
+                  }
                 >
                   {skillCategories.map((category) => (
                     <option key={category} value={category}>
@@ -142,7 +154,7 @@ const SkillsEditor = () => {
 
           <button
             onClick={handleAddSkill}
-            className="btn btn-primary btn-sm w-fit"
+            className="btn btn-primary btn-sm w-fit mt-4"
             disabled={!newSkill.name.trim()}
           >
             Add Skill
@@ -150,57 +162,65 @@ const SkillsEditor = () => {
         </div>
       </div>
 
-      {/* Skills by Category */}
+      {/* Skills by Category (Elegant Display) */}
       {skillCategories.map(
         (category) =>
           groupedSkills[category]?.length > 0 && (
-            <div key={category} className="card bg-base-100">
-              <div className="card-body">
-                <h3 className="card-title">{category}</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {groupedSkills[category].map((skill) => (
-                    <div
-                      key={skill.id}
-                      className="flex items-center justify-between p-3 bg-base-200 rounded-lg"
+            <div
+              key={category}
+              className="bg-base-100 p-6 rounded-lg shadow-sm mb-6"
+            >
+              <h3 className="text-xl font-semibold mb-4 border-b pb-2">
+                {category}
+              </h3>
+
+              <div className="flex flex-wrap gap-3">
+                {groupedSkills[category].map((skill) => (
+                  <div
+                    key={skill.id}
+                    className="flex items-center gap-2 bg-base-200 px-3 py-2 rounded-lg shadow-sm hover:shadow-md transition"
+                  >
+                    <span className="font-medium">{skill.name}</span>
+                    <span
+                      className="text-xs px-2 py-1 rounded-full text-white"
+                      style={{
+                        backgroundColor:
+                          skill.level === "Expert"
+                            ? "#10b981"
+                            : skill.level === "Advanced"
+                            ? "#3b82f6"
+                            : skill.level === "Intermediate"
+                            ? "#f59e0b"
+                            : "#6b7280",
+                      }}
                     >
-                      <div className="flex-1">
-                        <span className="font-medium">{skill.name}</span>
-                        <div
-                          className={`badge badge-sm ml-2 ${
-                            skill.level === 'Expert'
-                              ? 'badge-success'
-                              : skill.level === 'Advanced'
-                              ? 'badge-info'
-                              : skill.level === 'Intermediate'
-                              ? 'badge-warning'
-                              : 'badge-neutral'
-                          }`}
-                        >
-                          {skill.level}
-                        </div>
-                      </div>
+                      {skill.level}
+                    </span>
 
-                      
-                      <select
-                        className="select select-bordered select-xs mr-2"
-                        value={skill.level}
-                        onChange={(e) => handleUpdateSkill(skill.id, 'level', e.target.value)}
-                      >
-                        {skillLevels.map((lvl) => (
-                          <option key={lvl} value={lvl}>{lvl}</option>
-                        ))}
-                      </select>
-                      
+                    {/* Edit Level */}
+                    <select
+                      className="select select-bordered select-xs"
+                      value={skill.level}
+                      onChange={(e) =>
+                        handleUpdateSkill(skill.id, "level", e.target.value)
+                      }
+                    >
+                      {skillLevels.map((lvl) => (
+                        <option key={lvl} value={lvl}>
+                          {lvl}
+                        </option>
+                      ))}
+                    </select>
 
-                      <button
-                        onClick={() => handleRemoveSkill(skill.id)}
-                        className="btn btn-ghost btn-xs text-error"
-                      >
-                        ✕
-                      </button>
-                    </div>
-                  ))}
-                </div>
+                    {/* Remove */}
+                    <button
+                      onClick={() => handleRemoveSkill(skill.id)}
+                      className="btn btn-ghost btn-xs text-error"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                ))}
               </div>
             </div>
           )
@@ -211,7 +231,9 @@ const SkillsEditor = () => {
         <div className="text-center py-12 bg-base-200 rounded-lg">
           <div className="text-6xl mb-4">🎯</div>
           <h3 className="text-xl font-semibold mb-2">No skills added yet</h3>
-          <p className="text-base-content/60">Add your skills to showcase your expertise</p>
+          <p className="text-base-content/60">
+            Add your skills to showcase your expertise
+          </p>
         </div>
       )}
     </div>

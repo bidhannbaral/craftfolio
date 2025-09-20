@@ -185,44 +185,71 @@ const MinimalistTemplate = ({ portfolio }) => {
         </section>
       )}
 
-      {/* Skills Section */}
-      {skills.items.length > 0 && (
-        <section className="py-16 px-8" style={{ backgroundColor: styling.backgroundColor }}>
-          <div className="max-w-4xl mx-auto">
-            <h2 
-              className="text-3xl font-bold text-center mb-12"
-              style={{ color: styling.primaryColor }}
-            >
-              Skills & Expertise
-            </h2>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-              {skills.items.map((skill) => (
-                <div
-                  key={skill.id}
-                  className="text-center p-4 rounded-lg border-2"
-                  style={{ borderColor: styling.primaryColor + '20' }}
-                >
-                  <div className="font-semibold mb-2" style={{ color: styling.primaryColor }}>
-                    {skill.name}
-                  </div>
-                  <div 
-                    className="text-sm px-2 py-1 rounded text-white"
-                    style={{ 
-                      backgroundColor: 
-                        skill.level === 'Expert' ? '#10b981' :
-                        skill.level === 'Advanced' ? '#3b82f6' :
-                        skill.level === 'Intermediate' ? '#f59e0b' :
-                        '#6b7280'
-                    }}
-                  >
-                    {skill.level}
-                  </div>
-                </div>
-              ))}
+              {/* Skills Section */}
+        {skills.items.length > 0 && (
+          <section
+            className="py-16 px-8"
+            style={{ backgroundColor: styling.backgroundColor }}
+          >
+            <div className="max-w-4xl mx-auto">
+              <h2
+                className="text-3xl font-bold text-center mb-12"
+                style={{ color: styling.primaryColor }}
+              >
+                Skills & Expertise
+              </h2>
+
+              {/* Group skills by category */}
+              {['Technical', 'Soft Skills', 'Languages', 'Tools', 'Frameworks'].map(
+                (category) =>
+                  skills.items.some((s) => s.category === category) && (
+                    <div key={category} className="mb-10">
+                      <h3
+                        className="text-xl font-semibold mb-6"
+                        style={{ color: styling.secondaryColor }}
+                      >
+                        {category}
+                      </h3>
+
+                      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                        {skills.items
+                          .filter((s) => s.category === category)
+                          .map((skill) => (
+                            <div
+                              key={skill.id}
+                              className="text-center p-4 rounded-lg border-2"
+                              style={{ borderColor: styling.primaryColor + '20' }}
+                            >
+                              <div
+                                className="font-semibold mb-2"
+                                style={{ color: styling.primaryColor }}
+                              >
+                                {skill.name}
+                              </div>
+                              <div
+                                className="text-sm px-2 py-1 rounded text-white"
+                                style={{
+                                  backgroundColor:
+                                    skill.level === 'Expert'
+                                      ? '#10b981'
+                                      : skill.level === 'Advanced'
+                                      ? '#3b82f6'
+                                      : skill.level === 'Intermediate'
+                                      ? '#f59e0b'
+                                      : '#6b7280',
+                                }}
+                              >
+                                {skill.level}
+                              </div>
+                            </div>
+                          ))}
+                      </div>
+                    </div>
+                  )
+              )}
             </div>
-          </div>
-        </section>
-      )}
+          </section>
+        )}
 
       {/* Contact Section */}
       <footer className="py-16 px-8 text-center" style={{ backgroundColor: '#1f2937', color: 'white' }}>

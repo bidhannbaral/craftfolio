@@ -5,6 +5,30 @@ const MinimalistTemplate7 = ({ portfolio }) => {
   const { about, projects, skills, experience, contact, achievements } = sections;
   const { milestones = [], certificates = [] } = achievements || {};
 
+  // Group skills by category
+  const groupedSkills = skills.items.reduce((acc, skill) => {
+    const category = skill.category || "Other";
+    if (!acc[category]) acc[category] = [];
+    acc[category].push(skill);
+    return acc;
+  }, {});
+
+  // Helper for skill bar width
+  const getSkillWidth = (level) => {
+    switch (level) {
+      case "Expert":
+        return "100%";
+      case "Advanced":
+        return "75%";
+      case "Intermediate":
+        return "50%";
+      case "Beginner":
+        return "25%";
+      default:
+        return "0%";
+    }
+  };
+
   return (
     <div
       className="min-h-screen"
@@ -92,7 +116,7 @@ const MinimalistTemplate7 = ({ portfolio }) => {
         </div>
       </section>
 
-      {/* Milestones Section */}
+      {/* Achievements */}
       {milestones.length > 0 && (
         <section className="py-16 px-6 max-w-6xl mx-auto text-center">
           <h2
@@ -101,11 +125,15 @@ const MinimalistTemplate7 = ({ portfolio }) => {
           >
             Achievements
           </h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+          <div
+            className={`flex flex-wrap justify-center gap-8 ${
+              milestones.length === 1 ? "justify-center" : "justify-between"
+            }`}
+          >
             {milestones.map((m) => (
               <div
                 key={m.id}
-                className="p-6 bg-white rounded-lg shadow"
+                className="flex-1 min-w-[200px] max-w-[250px] p-6 bg-white rounded-lg shadow"
               >
                 <h3
                   className="text-4xl font-extrabold mb-2"
@@ -116,6 +144,82 @@ const MinimalistTemplate7 = ({ portfolio }) => {
                 <p className="text-gray-600">{m.label}</p>
               </div>
             ))}
+          </div>
+        </section>
+      )}
+
+      {/* Skills + Experience */}
+      {(skills.items.length > 0 || experience.items.length > 0) && (
+        <section className="py-16 px-6 max-w-6xl mx-auto">
+          <div className="flex flex-col md:flex-row gap-12">
+            {/* Skills grouped by category */}
+            {skills.items.length > 0 && (
+              <div className="flex-1">
+                <h2
+                  className="text-3xl font-bold mb-8"
+                  style={{ color: styling.primaryColor }}
+                >
+                  Skills
+                </h2>
+                {Object.keys(groupedSkills).map((category) => (
+                  <div key={category} className="mb-8">
+                    <h3 className="text-xl font-semibold mb-4">{category}</h3>
+                    <div className="space-y-6">
+                      {groupedSkills[category].map((skill) => (
+                        <div key={skill.id}>
+                          <div className="flex justify-between mb-2">
+                            <span>{skill.name}</span>
+                            <span className="text-sm text-gray-500">
+                              {skill.level}
+                            </span>
+                          </div>
+                          <div className="w-full bg-gray-200 rounded-full h-3">
+                            <div
+                              className="h-3 rounded-full"
+                              style={{
+                                width: getSkillWidth(skill.level),
+                                backgroundColor: styling.primaryColor,
+                              }}
+                            ></div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Experience */}
+            {experience.items.length > 0 && (
+              <div className="flex-1">
+                <h2
+                  className="text-3xl font-bold mb-8"
+                  style={{ color: styling.primaryColor }}
+                >
+                  Work Experience
+                </h2>
+                <div className="space-y-6">
+                  {experience.items.map((exp) => (
+                    <div
+                      key={exp.id}
+                      className="p-6 bg-white rounded-lg shadow border-l-4"
+                      style={{ borderLeftColor: styling.primaryColor }}
+                    >
+                      <h3 className="text-xl font-semibold">{exp.position}</h3>
+                      <p className="text-gray-700">{exp.company}</p>
+                      <p className="text-sm text-gray-500 mb-3">
+                        {exp.startDate} -{" "}
+                        {exp.current ? "Present" : exp.endDate}
+                      </p>
+                      <p className="text-gray-600 whitespace-pre-line">
+                        {exp.description}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         </section>
       )}
@@ -133,7 +237,7 @@ const MinimalistTemplate7 = ({ portfolio }) => {
             {projects.items.map((project) => (
               <div
                 key={project.id}
-                className="rounded-xl shadow bg-white overflow-hidden"
+                className="rounded-xl shadow bg-white overflow-hidden transform transition duration-300 hover:scale-110"
               >
                 {project.image && (
                   <img
@@ -180,84 +284,6 @@ const MinimalistTemplate7 = ({ portfolio }) => {
                 </div>
               </div>
             ))}
-          </div>
-        </section>
-      )}
-
-      {/* Skills + Experience */}
-      {(skills.items.length > 0 || experience.items.length > 0) && (
-        <section className="py-16 px-6 max-w-6xl mx-auto">
-          <div className="flex flex-col md:flex-row gap-12">
-            {/* Skills */}
-            {skills.items.length > 0 && (
-              <div className="flex-1">
-                <h2
-                  className="text-3xl font-bold mb-8"
-                  style={{ color: styling.primaryColor }}
-                >
-                  Skills
-                </h2>
-                <div className="space-y-6">
-                  {skills.items.map((skill) => (
-                    <div key={skill.id}>
-                      <div className="flex justify-between mb-2">
-                        <span>{skill.name}</span>
-                        <span className="text-sm text-gray-500">
-                          {skill.level}
-                        </span>
-                      </div>
-                      <div className="w-full bg-gray-200 rounded-full h-3">
-                        <div
-                          className="h-3 rounded-full"
-                          style={{
-                            width:
-                              skill.level === "Expert"
-                                ? "100%"
-                                : skill.level === "Advanced"
-                                ? "75%"
-                                : skill.level === "Intermediate"
-                                ? "50%"
-                                : "25%",
-                            backgroundColor: styling.primaryColor,
-                          }}
-                        ></div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Experience */}
-            {experience.items.length > 0 && (
-              <div className="flex-1">
-                <h2
-                  className="text-3xl font-bold mb-8"
-                  style={{ color: styling.primaryColor }}
-                >
-                  Work Experience
-                </h2>
-                <div className="space-y-6">
-                  {experience.items.map((exp) => (
-                    <div
-                      key={exp.id}
-                      className="p-6 bg-white rounded-lg shadow border-l-4"
-                      style={{ borderLeftColor: styling.primaryColor }}
-                    >
-                      <h3 className="text-xl font-semibold">{exp.position}</h3>
-                      <p className="text-gray-700">{exp.company}</p>
-                      <p className="text-sm text-gray-500 mb-3">
-                        {exp.startDate} -{" "}
-                        {exp.current ? "Present" : exp.endDate}
-                      </p>
-                      <p className="text-gray-600 whitespace-pre-line">
-                        {exp.description}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
           </div>
         </section>
       )}
@@ -333,6 +359,16 @@ const MinimalistTemplate7 = ({ portfolio }) => {
               className="px-6 py-3 border border-white rounded"
             >
               GitHub
+            </a>
+          )}
+          {contact.website && (
+            <a
+              href={contact.website}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-6 py-3 border border-white rounded"
+            >
+              Website
             </a>
           )}
         </div>

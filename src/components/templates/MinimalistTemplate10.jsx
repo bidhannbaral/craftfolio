@@ -1,5 +1,45 @@
 // src/components/templates/MinimalistTemplate10.jsx
-import React from "react";
+import React, { useState } from "react";
+
+// ✅ Reusable Video Player with fallback
+const VideoPlayer = ({ url, title }) => {
+  const [failed, setFailed] = useState(false);
+
+  // Extract YouTube ID if it's a YT link
+  const videoId = url.includes("v=")
+    ? url.split("v=")[1].split("&")[0]
+    : null;
+
+  if (failed || !videoId) {
+    return (
+      <div className="relative w-full md:w-3/4 h-96">
+        <img
+          src={`https://img.youtube.com/vi/${videoId}/hqdefault.jpg`}
+          alt={`${title} Thumbnail`}
+          className="w-full h-full object-cover rounded-lg shadow-lg"
+        />
+        <a
+          href={url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="absolute inset-0 flex items-center justify-center bg-black/50 text-white font-bold text-lg rounded-lg"
+        >
+          ▶ Watch on YouTube
+        </a>
+      </div>
+    );
+  }
+
+  return (
+    <iframe
+      src={url.replace("watch?v=", "embed/")}
+      title={title}
+      className="w-full md:w-3/4 h-96 rounded-lg shadow-lg"
+      allowFullScreen
+      onError={() => setFailed(true)}
+    ></iframe>
+  );
+};
 
 const MinimalistTemplate10 = ({ portfolio }) => {
   const { sections, styling, title } = portfolio;
@@ -10,9 +50,33 @@ const MinimalistTemplate10 = ({ portfolio }) => {
     achievements,
     projects,
     contact,
-    socialProof,
     media,
   } = sections;
+
+  const { certificates = [], milestones = [] } = achievements || {};
+
+  // Group skills by category
+  const groupedSkills = skills.items.reduce((acc, skill) => {
+    const category = skill.category || "Other";
+    if (!acc[category]) acc[category] = [];
+    acc[category].push(skill);
+    return acc;
+  }, {});
+
+  const getSkillWidth = (level) => {
+    switch (level) {
+      case "Expert":
+        return "100%";
+      case "Advanced":
+        return "75%";
+      case "Intermediate":
+        return "50%";
+      case "Beginner":
+        return "25%";
+      default:
+        return "0%";
+    }
+  };
 
   return (
     <div
@@ -46,7 +110,13 @@ const MinimalistTemplate10 = ({ portfolio }) => {
               {about.name || title}
             </h1>
             <p className="text-center text-gray-700 mb-4">{about.title}</p>
-            <p className="text-sm text-gray-600">{about.description}</p>
+            <p className="text-sm text-gray-600 mb-4">{about.description}</p>
+            {/* ✅ Email, Phone, Address */}
+            <div className="text-sm text-gray-700 text-center">
+              {about.email && <p>📧 {about.email}</p>}
+              {about.phone && <p>📞 {about.phone}</p>}
+              {about.location && <p>📍 {about.location}</p>}
+            </div>
           </div>
         </div>
       </section>
@@ -61,18 +131,13 @@ const MinimalistTemplate10 = ({ portfolio }) => {
             Showreel
           </h2>
           <div className="flex justify-center">
-            <iframe
-              src={media.videos[0].url}
-              title="Showreel"
-              className="w-full md:w-3/4 h-96 rounded-lg shadow-lg"
-              allowFullScreen
-            ></iframe>
+            <VideoPlayer url={media.videos[0].url} title="Showreel" />
           </div>
         </section>
       )}
 
       {/* Milestones */}
-      {achievements?.milestones?.length > 0 && (
+      {milestones.length > 0 && (
         <section className="p-12">
           <h2
             className="text-3xl font-bold text-center mb-10"
@@ -81,7 +146,7 @@ const MinimalistTemplate10 = ({ portfolio }) => {
             Milestones
           </h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
-            {achievements.milestones.map((m, idx) => (
+            {milestones.map((m, idx) => (
               <div key={idx} className="p-6 bg-white rounded-lg shadow">
                 <h3 className="text-3xl font-extrabold">{m.number}</h3>
                 <p className="text-sm text-gray-600">{m.label}</p>
@@ -101,19 +166,14 @@ const MinimalistTemplate10 = ({ portfolio }) => {
             Featured Performance
           </h2>
           <div className="flex justify-center">
-            <iframe
-              src={media.videos[1].url}
-              title="Performance"
-              className="w-full md:w-3/4 h-96 rounded-lg shadow-lg"
-              allowFullScreen
-            ></iframe>
+            <VideoPlayer url={media.videos[1].url} title="Performance" />
           </div>
         </section>
       )}
 
-      {/* Skills + Experience Side by Side */}
+      {/* Skills + Experience */}
       <section className="grid md:grid-cols-2 gap-12 p-12">
-        {/* Skills */}
+        {/* Skills (Grouped) */}
         {skills.items.length > 0 && (
           <div>
             <h2
@@ -122,32 +182,30 @@ const MinimalistTemplate10 = ({ portfolio }) => {
             >
               Skills
             </h2>
-            <div className="space-y-4">
-              {skills.items.map((s) => (
-                <div key={s.id}>
-                  <div className="flex justify-between mb-2">
-                    <span>{s.name}</span>
-                    <span className="text-sm text-gray-500">{s.level}</span>
-                  </div>
-                  <div className="h-2 bg-gray-200 rounded-full">
-                    <div
-                      className="h-2 rounded-full"
-                      style={{
-                        width:
-                          s.level === "Expert"
-                            ? "100%"
-                            : s.level === "Advanced"
-                            ? "75%"
-                            : s.level === "Intermediate"
-                            ? "50%"
-                            : "25%",
-                        backgroundColor: styling.primaryColor,
-                      }}
-                    />
-                  </div>
+            {Object.keys(groupedSkills).map((category) => (
+              <div key={category} className="mb-6">
+                <h3 className="text-lg font-semibold mb-3">{category}</h3>
+                <div className="space-y-4">
+                  {groupedSkills[category].map((s) => (
+                    <div key={s.id}>
+                      <div className="flex justify-between mb-2">
+                        <span>{s.name}</span>
+                        <span className="text-sm text-gray-500">{s.level}</span>
+                      </div>
+                      <div className="h-2 bg-gray-200 rounded-full">
+                        <div
+                          className="h-2 rounded-full"
+                          style={{
+                            width: getSkillWidth(s.level),
+                            backgroundColor: styling.primaryColor,
+                          }}
+                        />
+                      </div>
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
+              </div>
+            ))}
           </div>
         )}
 
@@ -182,7 +240,38 @@ const MinimalistTemplate10 = ({ portfolio }) => {
         )}
       </section>
 
-      {/* ✅ Photo Gallery using media.images */}
+      {/* Certificates */}
+      {certificates.length > 0 && (
+        <section className="p-12 bg-gray-50">
+          <h2
+            className="text-3xl font-bold text-center mb-10"
+            style={{ color: styling.primaryColor }}
+          >
+            Certificates
+          </h2>
+          <div className="grid md:grid-cols-2 gap-6">
+            {certificates.map((c, idx) => (
+              <div key={idx} className="p-6 bg-white rounded-lg shadow">
+                <h3 className="font-semibold text-xl mb-2">{c.title}</h3>
+                <p className="text-gray-600">{c.issuer}</p>
+                <p className="text-sm text-gray-500">{c.date}</p>
+                {c.link && (
+                  <a
+                    href={c.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-600 text-sm underline mt-2 inline-block"
+                  >
+                    View Certificate
+                  </a>
+                )}
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Gallery */}
       {media?.images?.length > 0 && (
         <section className="p-12 bg-gray-50">
           <h2
@@ -191,13 +280,13 @@ const MinimalistTemplate10 = ({ portfolio }) => {
           >
             Gallery
           </h2>
-          <div className="flex space-x-6 overflow-x-auto pb-4">
+          <div className="flex justify-center gap-6 flex-wrap">
             {media.images.map((img, idx) => (
               <img
                 key={idx}
                 src={img.url}
                 alt={`Gallery ${idx}`}
-                className="h-60 rounded-lg shadow flex-shrink-0"
+                className="h-60 rounded-lg shadow"
               />
             ))}
           </div>
@@ -215,7 +304,10 @@ const MinimalistTemplate10 = ({ portfolio }) => {
           </h2>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {projects.items.map((p) => (
-              <div key={p.id} className="bg-white shadow rounded-lg overflow-hidden">
+              <div
+                key={p.id}
+                className="bg-white shadow rounded-lg overflow-hidden"
+              >
                 {p.image && (
                   <img
                     src={p.image}
@@ -245,6 +337,11 @@ const MinimalistTemplate10 = ({ portfolio }) => {
               Email
             </a>
           )}
+          {contact.phone && (
+            <p className="px-6 py-3 border border-white rounded">
+              📞 {contact.phone}
+            </p>
+          )}
           {contact.linkedin && (
             <a
               href={contact.linkedin}
@@ -253,6 +350,26 @@ const MinimalistTemplate10 = ({ portfolio }) => {
               className="px-6 py-3 border border-white rounded"
             >
               LinkedIn
+            </a>
+          )}
+          {contact.github && (
+            <a
+              href={contact.github}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-6 py-3 border border-white rounded"
+            >
+              GitHub
+            </a>
+          )}
+          {contact.website && (
+            <a
+              href={contact.website}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-6 py-3 border border-white rounded"
+            >
+              Website
             </a>
           )}
         </div>

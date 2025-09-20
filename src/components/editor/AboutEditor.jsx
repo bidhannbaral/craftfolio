@@ -1,14 +1,16 @@
-import React, { useState } from 'react';
-import { usePortfolioStore } from '../../store/portfolioStore';
+// src/components/editors/AboutEditor.jsx
+import React, { useState } from "react";
+import { usePortfolioStore } from "../../store/portfolioStore";
 
 const AboutEditor = () => {
-  const { currentPortfolio, updatePortfolioSection, updatePortfolioTitle } = usePortfolioStore();
+  const { currentPortfolio, updatePortfolioSection, updatePortfolioTitle } =
+    usePortfolioStore();
   const { about } = currentPortfolio.sections;
   const [imagePreview, setImagePreview] = useState(about.profileImage);
 
- const handleInputChange = (field, value) => {
-  updatePortfolioSection('about', { [field]: value });
-};
+  const handleInputChange = (field, value) => {
+    updatePortfolioSection("about", { [field]: value });
+  };
 
   const handleTitleChange = (value) => {
     updatePortfolioTitle(value);
@@ -21,7 +23,7 @@ const AboutEditor = () => {
       reader.onload = (e) => {
         const base64Image = e.target.result;
         setImagePreview(base64Image);
-        handleInputChange('profileImage', base64Image);
+        handleInputChange("profileImage", base64Image);
       };
       reader.readAsDataURL(file);
     }
@@ -29,30 +31,35 @@ const AboutEditor = () => {
 
   const removeImage = () => {
     setImagePreview(null);
-    handleInputChange('profileImage', null);
+    handleInputChange("profileImage", null);
   };
 
   const activeTemplate = currentPortfolio.template;
 
   return (
     <div className="space-y-6">
+      {/* Section Header */}
       <div>
         <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
           <span className="text-2xl">👤</span>
           About Section
         </h2>
         <p className="text-base-content/70 mb-6">
-          Tell your story and make a great first impression. This section appears at the top of your portfolio.
+          Tell your story and make a great first impression. This section
+          appears at the top of your portfolio.
         </p>
       </div>
 
-   
-      {activeTemplate !== 'minimalist' && activeTemplate !== 'minimalist2' && activeTemplate !== 'minimalist8' && activeTemplate !== 'minimalist9' && (
+      {/* Hero Banner Upload (Improved) */}
+      {!["minimalist", "minimalist2", "minimalist8", "minimalist9"].includes(
+        activeTemplate
+      ) && (
         <div className="form-control">
           <label className="label">
             <span className="label-text font-semibold">Hero Banner Image</span>
             <span className="label-text-alt">Optional</span>
           </label>
+
           <input
             type="file"
             accept="image/*"
@@ -61,20 +68,37 @@ const AboutEditor = () => {
               if (file) {
                 const reader = new FileReader();
                 reader.onload = (ev) => {
-                  handleInputChange('heroBanner', ev.target.result);
+                  handleInputChange("heroBanner", ev.target.result);
                 };
                 reader.readAsDataURL(file);
               }
             }}
             className="file-input file-input-bordered w-full max-w-xs"
           />
+
           {about.heroBanner && (
-            <div className="mt-4">
+            <div className="relative mt-6 rounded-lg overflow-hidden shadow-md group">
               <img
                 src={about.heroBanner}
                 alt="Hero Banner Preview"
-                className="w-full max-h-48 object-cover rounded-lg shadow"
+                className="w-full h-48 md:h-64 lg:h-72 object-cover"
               />
+
+              {/* Overlay (appears on hover) */}
+              <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
+                <span className="text-white font-semibold text-lg">
+                  Hero Banner Preview
+                </span>
+              </div>
+
+              {/* Remove button */}
+              <button
+                type="button"
+                onClick={() => handleInputChange("heroBanner", null)}
+                className="absolute top-2 right-2 btn btn-error btn-xs btn-circle"
+              >
+                ✕
+              </button>
             </div>
           )}
         </div>
@@ -94,7 +118,9 @@ const AboutEditor = () => {
           onChange={(e) => handleTitleChange(e.target.value)}
         />
         <label className="label">
-          <span className="label-text-alt">This will be the main title of your portfolio</span>
+          <span className="label-text-alt">
+            This will be the main title of your portfolio
+          </span>
         </label>
       </div>
 
@@ -162,12 +188,14 @@ const AboutEditor = () => {
             placeholder="John Doe"
             className="input input-bordered w-full"
             value={about.name}
-            onChange={(e) => handleInputChange('name', e.target.value)}
+            onChange={(e) => handleInputChange("name", e.target.value)}
           />
         </div>
         <div className="form-control">
           <label className="label">
-            <span className="label-text font-semibold">Professional Title</span>
+            <span className="label-text font-semibold">
+              Professional Title
+            </span>
             <span className="label-text-alt text-error">Required</span>
           </label>
           <input
@@ -175,7 +203,7 @@ const AboutEditor = () => {
             placeholder="Full Stack Developer"
             className="input input-bordered w-full"
             value={about.title}
-            onChange={(e) => handleInputChange('title', e.target.value)}
+            onChange={(e) => handleInputChange("title", e.target.value)}
           />
         </div>
       </div>
@@ -192,7 +220,7 @@ const AboutEditor = () => {
             placeholder="john.doe@example.com"
             className="input input-bordered w-full"
             value={about.email}
-            onChange={(e) => handleInputChange('email', e.target.value)}
+            onChange={(e) => handleInputChange("email", e.target.value)}
           />
         </div>
         <div className="form-control">
@@ -205,7 +233,7 @@ const AboutEditor = () => {
             placeholder="+1 (555) 123-4567"
             className="input input-bordered w-full"
             value={about.phone}
-            onChange={(e) => handleInputChange('phone', e.target.value)}
+            onChange={(e) => handleInputChange("phone", e.target.value)}
           />
         </div>
       </div>
@@ -221,33 +249,45 @@ const AboutEditor = () => {
           placeholder="San Francisco, CA"
           className="input input-bordered w-full"
           value={about.location}
-          onChange={(e) => handleInputChange('location', e.target.value)}
+          onChange={(e) => handleInputChange("location", e.target.value)}
         />
       </div>
 
       {/* Description */}
       <div className="form-control">
         <label className="label">
-          <span className="label-text font-semibold">About Me Description</span>
+          <span className="label-text font-semibold">
+            About Me Description
+          </span>
           <span className="label-text-alt text-error">Required</span>
         </label>
         <textarea
           className="textarea textarea-bordered h-32"
           placeholder="Write a compelling description about yourself, your experience, and what makes you unique. This is your elevator pitch!"
           value={about.description}
-          onChange={(e) => handleInputChange('description', e.target.value)}
+          onChange={(e) => handleInputChange("description", e.target.value)}
         />
         <label className="label">
           <span className="label-text-alt">
-            Character count: {about.description.length} | Recommended: 150-300 characters
+            Character count: {about.description.length} | Recommended:
+            150-300 characters
           </span>
         </label>
       </div>
 
       {/* Tips */}
       <div className="alert alert-info">
-        <svg className="w-6 h-6 shrink-0 stroke-current" fill="none" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+        <svg
+          className="w-6 h-6 shrink-0 stroke-current"
+          fill="none"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth="2"
+            d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+          ></path>
         </svg>
         <div>
           <h3 className="font-bold">Pro Tips for Your About Section:</h3>
